@@ -8,9 +8,9 @@ let shuffledQuestions, currentQuestionIndex;
 
 startButton.addEventListener('click', startGame);
 nextButton.addEventListener('click', () => {
-  currentQuestionIndex = 0;
+  currentQuestionIndex++;
   setNextQuestion();
-})
+});
 
 function startGame() {
   startButton.classList.add('hide');
@@ -21,6 +21,7 @@ function startGame() {
 }
 
 function setNextQuestion() {
+  resetState();
   showQuestion(shuffledQuestions[currentQuestionIndex]);
 }
 
@@ -35,23 +36,81 @@ function showQuestion(question) {
     }
     button.addEventListener('click', selectAnswer);
     answerButtonsElement.appendChild(button);
-  })
+  });
 }
 
 function resetState() {
-  
+  clearStatusClass(document.body);
+  nextButton.classList.add('hide');
+  while (answerButtonsElement.firstChild) {
+    answerButtonsElement.removeChild(answerButtonsElement.firstChild);
+  }
 }
 
 function selectAnswer(e) {
-  
+  const selectedButton = e.target;
+  const correct = selectedButton.dataset.correct;
+  setStatusClass(document.body, correct);
+  Array.from(answerButtonsElement.children).forEach(button => {
+    setStatusClass(button, button.dataset.correct);
+  });
+  if (shuffledQuestions.length > currentQuestionIndex + 1) {
+    nextButton.classList.remove('hide');
+  } else {
+    startButton.innerText = 'Restart';
+    startButton.classList.remove('hide');
+  }
+}
+
+function setStatusClass(element, correct) {
+  clearStatusClass(element);
+  if (correct) {
+    element.classList.add('correct');
+  } else {
+    element.classList.add('wrong');
+  }
+}
+
+function clearStatusClass(element) {
+  element.classList.remove('correct')
+  element.classList.remove('wrong')
 }
 
 const questions = [
   {
-    question: 'What is 2 + 2?',
+    question: '6 * 6',
     answers: [
-      { text: '4', correct: true },
-      { text: '22', correct: false }
+      { text: '34', correct: false },
+      { text: '26', correct: false },
+      { text: '36', correct: true },
+      { text: '29', correct: false }
+    ]
+  },
+  {
+    question: '9 * 8',
+    answers: [
+      { text: '72', correct: true },
+      { text: '82', correct: false },
+      { text: '96', correct: false },
+      { text: '78', correct: false }
+    ]
+  },
+  {
+    question: 'Is web development fun?',
+    answers: [
+      { text: 'Kinda', correct: false },
+      { text: 'YES!!!', correct: true },
+      { text: 'Um no', correct: false },
+      { text: 'IDK', correct: false }
+    ]
+  },
+  {
+    question: '4 * 2',
+    answers: [
+      { text: '6', correct: false },
+      { text: '8', correct: true },
+      { text: '6', correct: false },
+      { text: '10', correct: false },
     ]
   }
-]
+];
